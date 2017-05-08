@@ -31,13 +31,18 @@ describe "Sudo", type: :request do
       assert user.reload.admin?
       assert user.reload.sudoer?
 
-      get "sudo/toggle?back_url=/my/page"
-      response.should redirect_to("/my/page")
+      get "/sudo/toggle?back_url=/my/page"
+      expect(response).to redirect_to("/my/page")
       assert !user.reload.admin?
 
-      get "sudo/toggle?back_url=/my/page"
-      response.should redirect_to("/my/page")
+      get "/sudo/toggle?back_url=/my/page"
+      expect(response).to redirect_to("/my/page")
       assert user.reload.admin?
-    end 
+    end
+
+    it "should not allow a redirection to a different domain name" do
+      get "/sudo/toggle?back_url=.my-custom-domain-name.com"
+      expect(response).to_not redirect_to("my-custom-domain-name.com")
+    end
   end
 end
